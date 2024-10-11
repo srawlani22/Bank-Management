@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Sparsh\\Desktop\\BankTransaction\\AccountAndTransactions\\AccountAndTransactions.csproj": {}
+    "C:\\Users\\Sparsh\\Desktop\\Bank-Management\\BankTransaction\\AccountAndTransactions\\AccountAndTransactions.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Sparsh\\Desktop\\BankTransaction\\AccountAndTransactions\\AccountAndTransactions.csproj": {
+    "C:\\Users\\Sparsh\\Desktop\\Bank-Management\\BankTransaction\\AccountAndTransactions\\AccountAndTransactions.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Sparsh\\Desktop\\BankTransaction\\AccountAndTransactions\\AccountAndTransactions.csproj",
+        "projectUniqueName": "C:\\Users\\Sparsh\\Desktop\\Bank-Management\\BankTransaction\\AccountAndTransactions\\AccountAndTransactions.csproj",
         "projectName": "AccountAndTransactions",
-        "projectPath": "C:\\Users\\Sparsh\\Desktop\\BankTransaction\\AccountAndTransactions\\AccountAndTransactions.csproj",
+        "projectPath": "C:\\Users\\Sparsh\\Desktop\\Bank-Management\\BankTransaction\\AccountAndTransactions\\AccountAndTransactions.csproj",
         "packagesPath": "C:\\Users\\Sparsh\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Sparsh\\Desktop\\BankTransaction\\AccountAndTransactions\\obj\\",
+        "outputPath": "C:\\Users\\Sparsh\\Desktop\\Bank-Management\\BankTransaction\\AccountAndTransactions\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
