@@ -3,6 +3,13 @@ An ASP.NET Core application that uses .NET entitycoreframework to simulate bank 
 
 ## This was for an assessment for a software engineer role at BOC Bank in Amarillo, TX
 
+## NuGet Packages Needed to Be Installed before running:
+- EPPlus
+- Microsoft.EntityFramework.Core
+- Microsoft.EntityFramework.Core.SqlServer
+- Microsoft.EntityFrameworkCore.Tools
+- Swashbuckle.AspNetCore
+
 ## Description on how to run:
 - Clone the app using git clone https://github.com/srawlani22/Bank-Management.git
 - Open the BankManagement.sln file in the cloned folder, make sure you have Visual Studio installed for this.
