@@ -6,11 +6,15 @@ namespace AccountAndTransactions.DAL
 {
     public interface IAccountService
     {
-        Task<Guid> CreatAccount(AccountDTO accountDTO);
+        Task<string> CreateAccountsWithTransactions(AccountDataDTO accountDTO);
 
-        Task<Account> GetAccount(Guid id);
+        Task<Account> GetAccount(int id);
 
-        Task<string> ExportAccounDetails(Guid id, string filePath);
+        Task<string> ExportAccounDetails(int id, string filePath);
+
+        Task<Account> CreateOneAccount(Account accountDTO);
+
+        Task DeleteAccount(int id);
 
     }
 }

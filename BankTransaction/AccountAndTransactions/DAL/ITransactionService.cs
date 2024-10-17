@@ -1,13 +1,16 @@
 ﻿using AccountAndTransactions.Modals;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AccountAndTransactions.DAL
 {
     public interface ITransactionService
     {
-        Task<bool> UpdateTransaction(Guid transactionId, decimal newAmount, string newDescription, bool debit_credit);
+        Task<Transactioncs> UpdateTransaction(int transactionId, decimal newAmount, string newDescription, string debit_credit);
 
-        Task<bool> DeleteTransaction(Guid transactionId);
+        Task<Transactioncs> DeleteTransaction(int transactionId);
 
-        Task<bool> AddTransaction(Guid accountId, decimal amount, string description, TransactionType transactionType);
+        Task<Transactioncs> AddTransaction(int accountId, decimal amount, string description, string debitOrCredit);
+
+        Task<Transactioncs[]> GetTransactions(int accountId);
     }
 }

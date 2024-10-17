@@ -17,21 +17,21 @@ namespace AccountAndTransactions.Controllers
         }
 
         [HttpPost]
-        public async Task<Guid> CreateAccount(AccountDTO accountDTO)
+        public async Task<string> CreateAccount(AccountDataDTO accountDTO)
         {
-            var accountId = await _accountService.CreatAccount(accountDTO);
+            var accountId = await _accountService.CreateAccountsWithTransactions(accountDTO);
             return accountId;
         }
 
         [HttpGet]
-        public async Task<Account> GetAccount(Guid id)
+        public async Task<Account> GetAccount(int id)
         {
             var accountDetails = await _accountService.GetAccount(id);
             return accountDetails;
         }
 
         [HttpGet("export/{id}")] // Route to export account details
-        public async Task<IActionResult> ExportAccountToExcel(Guid id)
+        public async Task<IActionResult> ExportAccountToExcel(int id)
         {
             string tempPath = "C:\\Users\\Sparsh\\Desktop";
             var filePath = await _accountService.ExportAccounDetails(id, tempPath);

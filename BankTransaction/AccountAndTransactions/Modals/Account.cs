@@ -4,15 +4,15 @@ namespace AccountAndTransactions.Modals
 {
     public class Account
     {
-        public Guid Id { get; set; }
+        public int id { get; set; }
 
-        public string Name { get; set; }
+        public string name { get; set; }
 
-        public string AccountNumber { get; set; }
+        public string accountNumber { get; set; }
 
-        public decimal CurrentBalance { get; set; }
+        public decimal currentBalance { get; set; }
 
-        public decimal OverdraftBalance { get; set; }
+        public decimal overdraftBalance { get; set; }
 
         public List<Transactioncs> Transactions { get; set; }
     }

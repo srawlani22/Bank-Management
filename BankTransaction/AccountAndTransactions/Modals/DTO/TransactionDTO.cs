@@ -2,15 +2,16 @@
 {
     public class TransactionDTO
     {
+        public int id {  get; set; }
 
-        public string Description { get; set; }
+        public int accountId { get; set; }
 
-        public string DebitOrCredit { get; set; }
+        public decimal amount { get; set; }
 
-        public decimal Amount { get; set; }
+        public string description { get; set; }
 
-        public Guid AccountId { get; set; }
+        public string debitOrCredit { get; set; }
 
-        public TransactionType Type { get; set; }
+        public TransactionType type { get; set; }
     }
 }

@@ -12,132 +12,171 @@ namespace AccountAndTransactions.DAL
             _context = context;
         }
 
+
         // function to update transcation
-        public async Task<bool> UpdateTransaction(Guid transactionId, decimal newAmount, string newDescription, bool debit_credit)
+        public async Task<Transactioncs> UpdateTransaction(int transactionId, decimal newAmount, string newDescription, string debit_credit)
         {
             // Find the transaction to update
             var transaction = await _context.Transactions
-                .FirstOrDefaultAsync(t => t.Id == transactionId);
+                .FirstOrDefaultAsync(t => t.id == transactionId);
 
             if (transaction == null)
             {
-                return false; // Transaction not found
+                throw new InvalidOperationException($"Transaction with ID {transactionId} not found.");
             }
 
             // Find the associated account
             var account = await _context.Accounts
-                .FirstOrDefaultAsync(a => a.Id == transaction.AccountId);
+                .FirstOrDefaultAsync(a => a.id == transaction.accountId);
 
             if (account == null)
             {
-                return false; // Account not found
+                throw new InvalidOperationException($"Account with ID {account.id} not found.");
             }
 
-            if (account.CurrentBalance >= account.OverdraftBalance)
+            // Reverse the old transaction amount
+            if (transaction.type == TransactionType.Deposit)
             {
-                decimal amountDifference = newAmount - transaction.Amount;
-
-                // Update the transaction properties
-                // Adjust current balance based on the type of transaction
-                if (debit_credit)
-                {
-                    account.CurrentBalance += amountDifference; // Add new amount
-                }
-                else
-                {
-                    account.CurrentBalance -= amountDifference; // Subtract new amount
-                }
-
-                transaction.Amount = newAmount; // Update transaction amount
-                transaction.Description = newDescription; // Update description
+                account.currentBalance -= transaction.amount; // Remove the old credit amount
             }
+            else
+            {
+                account.currentBalance += transaction.amount; // Add the old debit amount back
+            }
+
+            // Apply the new transaction amount
+            TransactionType newType = debit_credit == "credit" ? TransactionType.Deposit : TransactionType.Withdrawl;
+            if (newType == TransactionType.Deposit)
+            {
+                account.currentBalance += newAmount; // Add the new credit amount
+            }
+            else
+            {
+                account.currentBalance -= newAmount; // Subtract the new debit amount
+            }
+
+
+            if (account.currentBalance < account.overdraftBalance)
+            {
+                throw new InvalidOperationException($"Update would exceed overdraft limit for account {transaction.accountId}.");
+            }
+            transaction.amount = newAmount; // Update transaction amount
+            transaction.description = newDescription; // Update description
+            transaction.type = newType;
 
             // Save changes to the context
             await _context.SaveChangesAsync();
 
-            return true; // Update successful
+            return transaction; // Update successful
         }
 
         // function to delete transaction and adjust account
-        public async Task<bool> DeleteTransaction(Guid transactionId)
+        public async Task<Transactioncs> DeleteTransaction(int transactionId)
         {
-            // Find the transaction to delete
-            var transaction = await _context.Transactions
-                .FirstOrDefaultAsync(t => t.Id == transactionId);
-
-            if (transaction == null)
+            try
             {
-                return false; // Transaction not found
+                var transaction = await _context.Transactions
+                    .FirstOrDefaultAsync(t => t.id == transactionId);
+
+                if (transaction == null)
+                {
+                    throw new InvalidOperationException($"Transaction with ID {transactionId} not found.");
+                }
+
+                var account = await _context.Accounts
+                    .FirstOrDefaultAsync(a => a.id == transaction.accountId);
+
+                if (account == null)
+                {
+                    return null; // Account not found
+                }
+
+                // Adjust account balance
+                account.currentBalance += transaction.type == TransactionType.Deposit ? -transaction.amount : transaction.amount;
+
+                // Check overdraft limit
+                if (account.currentBalance < account.overdraftBalance)
+                {
+                    return null; // Deletion would exceed overdraft limit
+                }
+
+                _context.Transactions.Remove(transaction);
+                await _context.SaveChangesAsync();
+
+                return transaction; // Deletion successful
             }
-
-            // Find the associated account
-            var account = await _context.Accounts
-                .FirstOrDefaultAsync(a => a.Id == transaction.AccountId);
-
-            if (account == null)
+            catch (Exception ex)
             {
-                return false; // Account not found
+                // Log or handle the exception
+                throw new InvalidOperationException($"Transaction with ID {transactionId} not found.");
+                return null;
             }
-
-            // Adjust the account balance based on the transaction amount and type
-            if (transaction.Type == TransactionType.Deposit) // Assuming a type field exists
-            {
-                account.CurrentBalance -= transaction.Amount; // Subtract for debit transactions
-            }
-            else if (transaction.Type == TransactionType.Withdrawl) // Assuming a type field exists
-            {
-                account.CurrentBalance += transaction.Amount; // Add for credit transactions
-            }
-
-            // Remove the transaction from the context
-            _context.Transactions.Remove(transaction);
-
-            // Save changes to the context
-            await _context.SaveChangesAsync();
-
-            return true; // Deletion successful
         }
 
         // function to add transaction
-        public async Task<bool> AddTransaction(Guid accountId, decimal amount, string description, TransactionType transactionType)
+        public async Task<Transactioncs> AddTransaction(int accountId, decimal amount, string description, string debitOrCredit)
         {
-            // Find the account to associate with the transaction
-            var account = await _context.Accounts.FirstOrDefaultAsync(a => a.Id == accountId);
-
-            if (account == null)
+            try
             {
-                return false; // Account not found
+                var account = await _context.Accounts
+                    .FirstOrDefaultAsync(a => a.id == accountId);
+
+                if (account == null)
+                {
+                    return null; // Account not found
+                }
+
+                // Validate debitOrCredit
+                if (debitOrCredit.ToLower() != "debit" && debitOrCredit.ToLower() != "credit")
+                {
+                    return null; // Invalid debit/credit type
+                }
+
+                // Calculate new balance
+                decimal newBalance = debitOrCredit.ToLower() == "debit"
+                    ? account.currentBalance - amount
+                    : account.currentBalance + amount;
+
+                // Check overdraft limit
+                if (newBalance < account.overdraftBalance)
+                {
+                    return null; // Transaction would exceed overdraft limit
+                }
+
+                // Create new transaction
+                var transaction = new Transactioncs
+                {
+                    accountId = accountId,
+                    amount = amount,
+                    description = description,
+                    debitOrCredit = debitOrCredit,
+                    type = debitOrCredit.ToLower() == "debit" ? TransactionType.Withdrawl : TransactionType.Deposit
+                };
+
+                _context.Transactions.Add(transaction);
+                account.currentBalance = newBalance;
+                await _context.SaveChangesAsync();
+
+                return transaction; // Transaction added successfully
             }
-
-            // Create the new transaction
-            var transaction = new Transactioncs
+            catch (Exception ex)
             {
-                Id = Guid.NewGuid(),
-                Amount = amount,
-                Description = description,
-                Type = transactionType,
-                AccountId = accountId,
-            };
-
-            // Update the account balance based on transaction type
-            if (transactionType == TransactionType.Deposit)
-            {
-                account.CurrentBalance += amount; // Add for deposits
+                // Log or handle the exception
+                Console.WriteLine($"Error adding transaction: {ex.Message}");
+                return null;
             }
-            else if (transactionType == TransactionType.Withdrawl)
-            {
-                account.CurrentBalance -= amount; // Subtract for withdrawals
-            }
-
-            // Add the transaction to the context
-            await _context.Transactions.AddAsync(transaction);
-
-            // Save changes to the context
-            await _context.SaveChangesAsync();
-
-            return true; // Transaction added successfully
         }
 
+        /*
+         GET's all the transactions for an account
+         */
+        public async Task<Transactioncs[]> GetTransactions(int accountId)
+        {
+            var transactions = await _context.Transactions
+                .Where(t => t.accountId == accountId)
+                .ToArrayAsync();
 
+            return transactions;
+        }
     }
 }
