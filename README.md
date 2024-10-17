@@ -8,7 +8,9 @@ An ASP.NET Core application that uses .NET entitycoreframework to simulate bank 
 - Microsoft.EntityFramework.Core
 - Microsoft.EntityFramework.Core.SqlServer
 - Microsoft.EntityFrameworkCore.Tools
+- Microsoft.EntityFrameworkCore.InMemory
 - Swashbuckle.AspNetCore
+- Xunit
 
 ## Description on how to run:
 - Clone the app using git clone https://github.com/srawlani22/Bank-Management.git
@@ -16,7 +18,7 @@ An ASP.NET Core application that uses .NET entitycoreframework to simulate bank 
 - Navigate to appsettings.json and find the connection string for the database. Change that to the local server and the name of your database, and server credentials if needed.
 - Go to Package Manager Console and run the command add-migration "name" and then update-database. This should create the tables and the columns in the database.
 - Now, run the solution. This will launch a swagger portal that will have all the API endpoints to run this.
-- Start with running the POST endpoint for creating an Account. The endpoint name is /account/api/Account. Enter the values, the datatypes are shown below. This will also create the initial transaction for that account. If trying to get account info, use endpoint -GET /account/api/Account.
+- Start with running the POST endpoint for creating an Account. The endpoint name is /account/api/Account. Copy and Paste the given **"Data.json"** file here. This should create two accounts and transactions for those accounts.
   
 ![alt text](https://github.com/srawlani22/Bank-Management/blob/main/Images/post_account.jpg)
 
